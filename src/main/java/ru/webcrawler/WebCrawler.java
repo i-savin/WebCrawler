@@ -6,6 +6,8 @@ import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ru.webcrawler.entity.Page;
+import ru.webcrawler.entity.Url;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -29,20 +31,10 @@ public class WebCrawler {
         final String url = args[0];
         final int depth = Integer.valueOf(args[1]);
 
-//        parse(url, depth);
-        Thread parseThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ExecutorService es = Executors.newFixedThreadPool(50);
-                try {
-                    parseConcurrently(url, depth, es);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        parseThread.start();
+        BlockingQueue<Page> pagesQueue = new LinkedBlockingQueue<>();
+        Parser parser = new Parser(pagesQueue);
+        parser.parse(url, depth);
+        System.out.println(pagesQueue.size());
     }
 
 
