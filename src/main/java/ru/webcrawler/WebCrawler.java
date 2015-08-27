@@ -22,8 +22,8 @@ import java.util.concurrent.*;
 public class WebCrawler {
 
     static {
-//        System.setProperty("http.proxyHost", "TMGHQ.office.finam.ru");
-//        System.setProperty("http.proxyPort", "8080");
+        System.setProperty("http.proxyHost", "TMGHQ.office.finam.ru");
+        System.setProperty("http.proxyPort", "8080");
     }
 
     public static void main (String[] args) throws IOException {
