@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.webcrawler.dao.DaoException;
 import ru.webcrawler.dao.PageDAO;
-import ru.webcrawler.dao.PageDAOFileImpl;
+import ru.webcrawler.dao.PageDaoFileImpl;
 import ru.webcrawler.dao.PageDaoJdbcImpl;
 import ru.webcrawler.entity.Page;
 
@@ -25,12 +25,12 @@ public class Writer {
     }
 
     public void writeToFile(String fileName) throws IOException {
-        PageDAO pageDAO = new PageDAOFileImpl(fileName);
+        PageDAO pageDAO = new PageDaoFileImpl(fileName);
         Page currentPage = null;
         try {
             while ((currentPage = pagesQueue.poll(10, TimeUnit.SECONDS)) != null) {
                 try {
-                    pageDAO.create(currentPage);
+                    pageDAO.save(currentPage);
                     logger.info("Page [{}] successfully saved to file", currentPage.getLink());
                 } catch (DaoException e) {
                     logger.error("Error serializing page [{}]: {}", currentPage.getLink(), e);
@@ -47,7 +47,7 @@ public class Writer {
         try {
             while ((currentPage = pagesQueue.poll(10, TimeUnit.SECONDS)) != null) {
                 try {
-                    pageDAO.create(currentPage);
+                    pageDAO.save(currentPage);
                     logger.info("Page [{}] successfully saved to DB", currentPage.getLink());
                 } catch (DaoException e) {
                     logger.error("Error serializing page [{}]: {}", currentPage.getLink(), e);

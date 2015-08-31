@@ -7,5 +7,5 @@ import ru.webcrawler.entity.Page;
  */
 public interface PageDAO {
 
-    public void create(Page page) throws DaoException;
+    public void save(Page page) throws DaoException;
 }

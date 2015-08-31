@@ -22,9 +22,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Parser {
 
     private static final Logger logger = LoggerFactory.getLogger(Parser.class);
-    //TODO ��������� � ������
-    private static final int THREAD_POOL_SIZE = 500;
-    private static final int CONNECTION_TIMEOUT_IN_SECONDS = 20;
+
+    private static final int THREAD_POOL_SIZE = Integer.parseInt(Settings.getSettingsInstance().get("threadpool.size"));//100
+    private static final int CONNECTION_TIMEOUT_IN_SECONDS = Integer.parseInt(Settings.getSettingsInstance().get("connection.timeout"));//100
 
     private BlockingQueue<Url> linksQueue = new LinkedBlockingQueue<>();
     private AtomicInteger linksCount = new AtomicInteger(0);
@@ -45,7 +45,6 @@ public class Parser {
                 es.execute(new UrlParser(currentUrl, depthLimit));
             }
             es.shutdown();
-            //TODO ������� ���������!
             es.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {}
 
@@ -68,7 +67,6 @@ public class Parser {
 
         private void parseUrl() {
             UrlValidator urlValidator = new UrlValidator(UrlValidator.ALLOW_2_SLASHES + UrlValidator.ALLOW_LOCAL_URLS);
-            //���� ������ ��� ���������� ��� ��� �� ����������, �������
             synchronized (visitedLinks) {
                 if (visitedLinks.contains(currentUrl) || !urlValidator.isValid(currentUrl.getUrl())) {
                     return;
@@ -88,7 +86,7 @@ public class Parser {
                 linksCount.incrementAndGet();
                 logger.info("Processed link: [{}]", currentUrl.getUrl());
             } catch (IOException e) {
-                logger.error("Error connecting to URL [{}]: {}", currentUrl.getUrl(), e.getMessage());
+                logger.error("Error connecting to URL [{}]: {}", currentUrl.getUrl(), e);
             }
         }
     }
