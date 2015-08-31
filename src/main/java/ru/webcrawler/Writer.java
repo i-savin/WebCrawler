@@ -1,5 +1,8 @@
 package ru.webcrawler;
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.webcrawler.dao.DaoException;
 import ru.webcrawler.dao.PageDAO;
 import ru.webcrawler.dao.PageDAOFileImpl;
@@ -14,6 +17,7 @@ import java.util.concurrent.TimeUnit;
  * Created by isavin on 28.08.2015.
  */
 public class Writer {
+    private static final Logger logger = LoggerFactory.getLogger(Writer.class);
     private BlockingQueue<Page> pagesQueue;
 
     public Writer(BlockingQueue<Page> pagesQueue) {
@@ -27,9 +31,9 @@ public class Writer {
             while ((currentPage = pagesQueue.poll(10, TimeUnit.SECONDS)) != null) {
                 try {
                     pageDAO.create(currentPage);
-                    System.out.println("Page " + currentPage.getLink() + " successfully saved to file");
+                    logger.info("Page [{}] successfully saved to file", currentPage.getLink());
                 } catch (DaoException e) {
-                    e.printStackTrace();
+                    logger.error("Error serializing page [{}]: {}", currentPage.getLink(), e);
                 }
             }
         } catch (InterruptedException e) {
@@ -44,9 +48,9 @@ public class Writer {
             while ((currentPage = pagesQueue.poll(10, TimeUnit.SECONDS)) != null) {
                 try {
                     pageDAO.create(currentPage);
-                    System.out.println("Page " + currentPage.getLink() + " successfully saved to DB");
+                    logger.info("Page [{}] successfully saved to DB", currentPage.getLink());
                 } catch (DaoException e) {
-                    e.printStackTrace();
+                    logger.error("Error serializing page [{}]: {}", currentPage.getLink(), e);
                 }
             }
         } catch (InterruptedException e) {

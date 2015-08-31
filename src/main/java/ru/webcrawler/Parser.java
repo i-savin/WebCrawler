@@ -5,6 +5,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.webcrawler.entity.Page;
 import ru.webcrawler.entity.Url;
 
@@ -18,9 +20,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by isavin on 27.08.2015.
  */
 public class Parser {
-    //TODO перенести в конфиг
-    private static final int THREAD_POOL_SIZE = 100;
-    private static final int CONNECTION_TIMEOUT_IN_SECONDS = 10;
+
+    private static final Logger logger = LoggerFactory.getLogger(Parser.class);
+    //TODO пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+    private static final int THREAD_POOL_SIZE = 500;
+    private static final int CONNECTION_TIMEOUT_IN_SECONDS = 20;
 
     private BlockingQueue<Url> linksQueue = new LinkedBlockingQueue<>();
     private AtomicInteger linksCount = new AtomicInteger(0);
@@ -41,11 +45,11 @@ public class Parser {
                 es.execute(new UrlParser(currentUrl, depthLimit));
             }
             es.shutdown();
-            //TODO сделать нормально!
+            //TODO пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!
             es.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {}
 
-        System.out.println("Method finished. URLs number: " + linksCount.get());
+        logger.info("Method finished. URLs number: {}", linksCount.get());
     }
 
     private class UrlParser implements Runnable {
@@ -64,7 +68,7 @@ public class Parser {
 
         private void parseUrl() {
             UrlValidator urlValidator = new UrlValidator(UrlValidator.ALLOW_2_SLASHES + UrlValidator.ALLOW_LOCAL_URLS);
-            //если ссылку уже обработали или урл не корректный, выходим
+            //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             synchronized (visitedLinks) {
                 if (visitedLinks.contains(currentUrl) || !urlValidator.isValid(currentUrl.getUrl())) {
                     return;
@@ -82,9 +86,9 @@ public class Parser {
                     }
                 }
                 linksCount.incrementAndGet();
-                System.out.println(currentUrl.getUrl());
+                logger.info("Processed link: [{}]", currentUrl.getUrl());
             } catch (IOException e) {
-                System.err.println("Error connecting to URL [" + currentUrl.getUrl() + "]: " + e.getMessage());
+                logger.error("Error connecting to URL [{}]: {}", currentUrl.getUrl(), e.getMessage());
             }
         }
     }

@@ -6,6 +6,8 @@ import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.webcrawler.entity.Page;
 import ru.webcrawler.entity.Url;
 
@@ -17,6 +19,8 @@ import java.util.concurrent.*;
  * Created by isavin on 26.08.2015.
  */
 public class WebCrawler {
+
+    private final static Logger logger = LoggerFactory.getLogger(WebCrawler.class);
 
     static {
 //        System.setProperty("http.proxyHost", "TMGHQ.office.finam.ru");
@@ -41,24 +45,12 @@ public class WebCrawler {
 
         Writer writer = new Writer(pagesQueue);
         try {
-            StringBuffer fileName = new StringBuffer(url.replace("https","").replace(":", "-").replace("/", ""));
+            StringBuffer fileName = new StringBuffer(url.replace("https","").replace("http", "").replace(":", "").replace("/", ""));
             writer.writeToDB();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+//            writer.writeToFile(fileName.toString());
+        } catch (Exception e) {
+            logger.error("Error serializing page: {}", e);
+//            e.printStackTrace();
         }
-
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                Writer writer = new Writer(pagesQueue);
-//                try {
-//                    StringBuffer fileName = new StringBuffer(url.replace(":", "-").replace("/",""));
-//                    writer.writeToFile(fileName.toString());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }).start();
     }
 }
