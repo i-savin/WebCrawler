@@ -42,7 +42,11 @@ public class Writer {
     }
 
     public void writeToDB() throws ClassNotFoundException {
-        PageDAO pageDAO = new PageDaoJdbcImpl();
+        String connectionUrl = Settings.getSettingsInstance().get("db.connection.url");//"jdbc:hsqldb:hsql://localhost/xdb";
+        String driverName = Settings.getSettingsInstance().get("db.driver.name");//"org.hsqldb.jdbcDriver";
+        String userName = Settings.getSettingsInstance().get("db.user.name");//"SA";
+        String password = Settings.getSettingsInstance().get("db.password");//"";
+        PageDAO pageDAO = new PageDaoJdbcImpl(connectionUrl, driverName, userName, password);
         Page currentPage = null;
         try {
             while ((currentPage = pagesQueue.poll(10, TimeUnit.SECONDS)) != null) {
