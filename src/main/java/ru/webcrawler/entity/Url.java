@@ -1,7 +1,9 @@
 package ru.webcrawler.entity;
 
 public class Url {
+    // address
     private String link;
+    // link level
     private int depth;
 
     public Url(String link, int depth) {

@@ -4,13 +4,6 @@ import org.junit.Test;
 import org.junit.Before; 
 import org.junit.After; 
 
-/** 
-* Parser Tester. 
-* 
-* @author <Authors name> 
-* @since <pre>сен 1, 2015</pre> 
-* @version 1.0 
-*/ 
 public class ParserTest { 
 
 @Before

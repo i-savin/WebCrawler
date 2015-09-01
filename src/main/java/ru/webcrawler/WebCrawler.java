@@ -39,7 +39,6 @@ public class WebCrawler {
             public void run() {
                 Parser parser = new Parser(pagesQueue);
                 parser.parse(url, depth);
-                System.out.println(pagesQueue.size());
             }
         }).start();
 
@@ -50,7 +49,6 @@ public class WebCrawler {
 //            writer.writeToFile(fileName.toString());
         } catch (Exception e) {
             logger.error("Error serializing page: {}", e);
-//            e.printStackTrace();
         }
     }
 }

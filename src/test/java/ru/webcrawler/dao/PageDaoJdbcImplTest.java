@@ -12,13 +12,7 @@ import ru.webcrawler.entity.Page;
 import javax.sql.DataSource;
 import java.sql.*;
 import static org.junit.Assert.*;
-/** 
-* PageDaoJdbcImpl Tester. 
-* 
-* @author <Authors name> 
-* @since <pre>сен 1, 2015</pre> 
-* @version 1.0 
-*/ 
+
 public class PageDaoJdbcImplTest {
     private final static Logger logger = LoggerFactory.getLogger(PageDaoFileImpl.class);
 

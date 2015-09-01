@@ -11,6 +11,15 @@ wrapper {
     gradleVersion = '2.7-rc-1'
 }
 
+task myJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'ru.webcrawler.WebCrawler'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile 'org.jsoup:jsoup:1.8.3'

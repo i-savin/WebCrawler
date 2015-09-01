@@ -34,23 +34,7 @@ public class PageDaoJdbcImpl  implements PageDAO {
             ps.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
-            throw new DaoException("Error writing page " + page.getLink() + " to DB:", e);
+            throw new DaoException("Error writing page " + page.getLink() + " to DB", e);
         }
-    }
-
-    public void setConnectionUrl(String connectionUrl) {
-        this.connectionUrl = connectionUrl;
-    }
-
-    public void setDriverName(String driverName) {
-        this.driverName = driverName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }

@@ -15,3 +15,6 @@
 * Можно использовать Jsoup и ExecutorService.
 * В проверке задания будет учитываться не только работоспособность, но и качество кода. 
 * Большим плюсом будет написание юнит-тестов к приложению.
+
+Сборка проекта: gradle jar
+Запуск проекта: java -jar WebCrawler-all-1.0.jar site_url depth (например, java -jar WebCrawler-all-1.0.jar http://www.adlr.ru 2)
