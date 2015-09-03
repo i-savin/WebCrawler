@@ -1,25 +1,20 @@
 package ru.webcrawler;
 
-import org.apache.commons.validator.routines.UrlValidator;
-import org.jsoup.Jsoup;
 import org.jsoup.helper.Validate;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.webcrawler.entity.Page;
-import ru.webcrawler.entity.Url;
 
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Created by isavin on 26.08.2015.
+ * Created by isavin on 03.09.2015.
  */
-public class WebCrawler {
-
+public class WebCrawlerSpring {
     private final static Logger logger = LoggerFactory.getLogger(WebCrawler.class);
 
     static {
@@ -42,7 +37,10 @@ public class WebCrawler {
             }
         }).start();
 
-        Writer writer = new Writer();
+        ApplicationContext ctx =
+                new ClassPathXmlApplicationContext("context.xml");
+
+        Writer writer = (Writer) ctx.getBean("writer");
         writer.setPagesQueue(pagesQueue);
         try {
             StringBuffer fileName = new StringBuffer(url.replace("https","").replace("http", "").replace(":", "").replace("/", ""));
