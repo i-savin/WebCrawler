@@ -5,11 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import ru.webcrawler.entity.Page;
 
 import java.io.IOException;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by isavin on 03.09.2015.
@@ -32,6 +29,6 @@ public class WebCrawlerSpring {
 
         WebCrawler webCrawler = (WebCrawler)ctx.getBean("crawler");
         webCrawler.crawl(url, depth);
-        logger.info("Link {} has been processed for depth {}", url, depth);
+        logger.info("Link [{}] has been processed for depth {}", url, depth);
     }
 }
