@@ -29,6 +29,7 @@ public class Writer {
             while ((currentPage = pagesQueue.poll(connectionTimeout, TimeUnit.SECONDS)) != null) {
                 try {
                     pageDao.save(currentPage);
+                    logger.info("Page [{}] was successfully saved", currentPage.getLink());
                 } catch (DaoException e) {
                     logger.error("Error serializing page [{}]: {}", currentPage.getLink(), e);
                 }
@@ -36,6 +37,7 @@ public class Writer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        logger.info("All pages from queue was saved");
     }
 
     public void setPageDao(PageDAO pageDao) {

@@ -23,41 +23,49 @@ public class Parser {
 
     private static final Logger logger = LoggerFactory.getLogger(Parser.class);
 
-    private static final int THREAD_POOL_SIZE = Integer.parseInt(Settings.getSettingsInstance().get("threadpool.size"));//100
-    private static final int CONNECTION_TIMEOUT_IN_SECONDS = Integer.parseInt(Settings.getSettingsInstance().get("connection.timeout"));//100
-
     private BlockingQueue<Url> linksQueue = new LinkedBlockingQueue<>();
     private AtomicInteger linksCount = new AtomicInteger(0);
     private CopyOnWriteArrayList<Url> visitedLinks = new CopyOnWriteArrayList<>();
 
-    private BlockingQueue<Page> pagesQueue;
+    private int threadPoolSize;
+    private int connectionTimeout;
 
-    public Parser(BlockingQueue<Page> pagesQueue) {
-        this.pagesQueue = pagesQueue;
+    public Parser(int threadPoolSize, int connectionTimeout) {
+        this.threadPoolSize = threadPoolSize;
+        this.connectionTimeout = connectionTimeout;
     }
 
-    public void parse(String urlStr, final int depthLimit) {
+    public BlockingQueue<Page> parse(String urlStr, final int depthLimit) {
+        final BlockingQueue<Page> pagesQueue = new LinkedBlockingQueue<>();
         linksQueue.add(new Url(urlStr, 1));
-        ExecutorService es = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-        Url currentUrl = null;
-        try {
-            while ((currentUrl = linksQueue.poll(CONNECTION_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)) != null) {
-                es.execute(new UrlParser(currentUrl, depthLimit));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ExecutorService es = Executors.newFixedThreadPool(threadPoolSize);
+                Url currentUrl = null;
+                try {
+                    while ((currentUrl = linksQueue.poll(connectionTimeout, TimeUnit.SECONDS)) != null) {
+                        es.execute(new UrlParser(currentUrl, depthLimit, pagesQueue));
+                    }
+                    es.shutdown();
+                    boolean finished = es.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+                    logger.info("Method finished: {}. URLs number: {}", true, linksCount.get());
+                } catch (InterruptedException e) {e.printStackTrace();}
             }
-            es.shutdown();
-            es.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch (InterruptedException e) {}
+        }).start();
 
-        logger.info("Method finished. URLs number: {}", linksCount.get());
+        return pagesQueue;
     }
 
     private class UrlParser implements Runnable {
         private Url currentUrl;
         private int depthLimit;
+        private BlockingQueue<Page> pagesQueue;
 
-        public UrlParser(Url currentUrl, int depthLimit) {
+        public UrlParser(Url currentUrl, int depthLimit, BlockingQueue<Page> pagesQueue) {
             this.currentUrl = currentUrl;
             this.depthLimit = depthLimit;
+            this.pagesQueue = pagesQueue;
         }
 
         @Override
@@ -74,7 +82,7 @@ public class Parser {
                 visitedLinks.addIfAbsent(currentUrl);
             }
             try {
-                Document document = Jsoup.connect(currentUrl.getUrl()).timeout(CONNECTION_TIMEOUT_IN_SECONDS * 1000).get();
+                Document document = Jsoup.connect(currentUrl.getUrl()).timeout(connectionTimeout * 1000).get();
                 pagesQueue.add(new Page(currentUrl.getUrl(), document.body().text()));
                 if (currentUrl.getDepth() < depthLimit) {
                     Elements links = document.select("a[href]");

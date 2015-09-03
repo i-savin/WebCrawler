@@ -3,6 +3,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="config.properties" />
+    </bean>
+
     <import resource="database/datasource.xml"/>
     <import resource="beans/spring-beans.xml"/>
 
