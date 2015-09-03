@@ -1,5 +1,6 @@
 package ru.webcrawler;
 
+import org.apache.commons.cli.Option;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.Validate;
@@ -22,34 +23,21 @@ public class WebCrawler {
 
     private final static Logger logger = LoggerFactory.getLogger(WebCrawler.class);
 
+    private Parser parser;
+    private Writer writer;
+
     static {
 //        System.setProperty("http.proxyHost", "TMGHQ.office.finam.ru");
 //        System.setProperty("http.proxyPort", "8080");
     }
 
-    public static void main (String[] args) throws IOException {
-        Validate.isTrue(args.length == 2, "usage: WebCrawler url depth");
-        final String url = args[0];
-        final int depth = Integer.valueOf(args[1]);
+    public WebCrawler(Parser parser, Writer writer) {
+        this.parser = parser;
+        this.writer = writer;
+    }
 
-        final BlockingQueue<Page> pagesQueue = new LinkedBlockingQueue<>();
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                Parser parser = new Parser(pagesQueue);
-                parser.parse(url, depth);
-            }
-        }).start();
-
-        Writer writer = new Writer();
-        writer.setPagesQueue(pagesQueue);
-        try {
-            StringBuffer fileName = new StringBuffer(url.replace("https","").replace("http", "").replace(":", "").replace("/", ""));
-            writer.writeToDB();
-//            writer.writeToFile(fileName.toString());
-        } catch (Exception e) {
-            logger.error("Error serializing page: {}", e);
-        }
+    public void crawl(String url, int depth) {
+        BlockingQueue<Page> pagesQueue = parser.parse(url, depth);
+        writer.savePagesFromQueue(pagesQueue);
     }
 }

@@ -13,7 +13,21 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
     </bean>
 
     <bean id="writer" class="ru.webcrawler.Writer">
+        <constructor-arg type="int" value="${connection.timeout}"/>
         <property name="pageDao" ref="pageDao" />
+    </bean>
+
+    <bean id="parser" class="ru.webcrawler.Parser">
+        <constructor-arg type="int" value="${connection.timeout}"/>
+        <constructor-arg type="int" value="${threadpool.size}"/>
+    </bean>
+
+    <bean id="pagesQueue" class="java.util.concurrent.LinkedBlockingQueue">
+    </bean>
+
+    <bean id="crawler" class="ru.webcrawler.WebCrawler">
+        <constructor-arg  type="ru.webcrawler.Parser" ref="parser" />
+        <constructor-arg  type="ru.webcrawler.Writer" ref="writer" />
     </bean>
 
 </beans>

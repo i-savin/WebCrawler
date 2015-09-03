@@ -18,21 +18,20 @@ import java.util.concurrent.TimeUnit;
  */
 public class Writer {
     private static final Logger logger = LoggerFactory.getLogger(Writer.class);
-    private static final int CONNECTION_TIMEOUT_IN_SECONDS = Integer.parseInt(Settings.getSettingsInstance().get("connection.timeout"));//100
-    private BlockingQueue<Page> pagesQueue;
+
+    private int connectionTimeout;
     private PageDAO pageDao;
 
-    public Writer() {
+    public Writer(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
     }
 
-    public void writeToFile(String fileName) throws IOException {
-//        PageDAO pageDAO = new PageDaoFileImpl(fileName);
+    public void savePagesFromQueue(BlockingQueue<Page> pagesQueue) {
         Page currentPage = null;
         try {
-            while ((currentPage = pagesQueue.poll(CONNECTION_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)) != null) {
+            while ((currentPage = pagesQueue.poll(connectionTimeout, TimeUnit.SECONDS)) != null) {
                 try {
                     pageDao.save(currentPage);
-                    logger.info("Page [{}] successfully saved to file", currentPage.getLink());
                 } catch (DaoException e) {
                     logger.error("Error serializing page [{}]: {}", currentPage.getLink(), e);
                 }
@@ -42,33 +41,7 @@ public class Writer {
         }
     }
 
-    public void writeToDB() throws ClassNotFoundException {
-//        String connectionUrl = Settings.getSettingsInstance().get("db.connection.url");//"jdbc:hsqldb:hsql://localhost/xdb";
-//        String driverName = Settings.getSettingsInstance().get("db.driver.name");//"org.hsqldb.jdbcDriver";
-//        String userName = Settings.getSettingsInstance().get("db.user.name");//"SA";
-//        String password = Settings.getSettingsInstance().get("db.password");//"";
-
-//        PageDAO pageDAO = new PageDaoJdbcImpl(connectionUrl, driverName, userName, password);
-        Page currentPage = null;
-        try {
-            while ((currentPage = pagesQueue.poll(CONNECTION_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)) != null) {
-                try {
-                    pageDao.save(currentPage);
-                    logger.info("Page [{}] successfully saved to DB", currentPage.getLink());
-                } catch (DaoException e) {
-                    logger.error("Error serializing page [{}]: {}", currentPage.getLink(), e.getCause());
-                }
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void setPageDao(PageDAO pageDao) {
         this.pageDao = pageDao;
-    }
-
-    public void setPagesQueue(BlockingQueue<Page> pagesQueue) {
-        this.pagesQueue = pagesQueue;
     }
 }
