@@ -13,7 +13,7 @@ wrapper {
 
 task myJar(type: Jar) {
     manifest {
-        attributes 'Main-Class': 'ru.webcrawler.WebCrawler'
+        attributes 'Main-Class': 'ru.webcrawler.WebCrawlerSpring'
     }
     baseName = project.name + '-all'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
