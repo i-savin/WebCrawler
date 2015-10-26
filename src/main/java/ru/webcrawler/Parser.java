@@ -11,8 +11,6 @@ import ru.webcrawler.entity.Page;
 import ru.webcrawler.entity.Url;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,7 +34,7 @@ public class Parser {
     }
 
     public BlockingQueue<Page> parse(String urlStr, final int depthLimit) {
-        final BlockingQueue<Page> pagesQueue = new LinkedBlockingQueue<>();
+        final LinkedBlockingQueue<Page> pagesQueue = new LinkedBlockingQueue<>();
         linksQueue.add(new Url(urlStr, 1));
         new Thread(new Runnable() {
             @Override
@@ -53,7 +51,6 @@ public class Parser {
                 } catch (InterruptedException e) {e.printStackTrace();}
             }
         }).start();
-
         return pagesQueue;
     }
 

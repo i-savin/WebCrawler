@@ -5,6 +5,8 @@ package ru.webcrawler.entity;
  */
 public class Page {
 
+    public static Page POISON_PILL_PAGE = new Page("", "");
+
     private String link;
     private String text;
 
@@ -28,8 +30,14 @@ public class Page {
 
         Page page = (Page) o;
 
-        if (!link.equals(page.link)) return false;
-        return text.equals(page.text);
+        if (link == null) {
+            if (page.link != null) {
+                return false;
+            }
+        } else {
+            if (!link.equals(page.link)) return false;
+        }
+        return (text == null ? page.text == null : text.equals(page.text));
 
     }
 
