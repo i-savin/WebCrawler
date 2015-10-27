@@ -28,7 +28,7 @@ public class WebCrawlerSpring {
                 new ClassPathXmlApplicationContext("context.xml");
 
         WebCrawler webCrawler = (WebCrawler)ctx.getBean("crawler");
-        webCrawler.crawl(url, depth);
+//        webCrawler.crawl(url, depth);
         logger.info("Link [{}] has been processed for depth {}", url, depth);
     }
 }

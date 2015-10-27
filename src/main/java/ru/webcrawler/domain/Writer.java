@@ -3,6 +3,7 @@ package ru.webcrawler.domain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.webcrawler.entity.Page;
 import ru.webcrawler.repository.Repository;
 
@@ -11,10 +12,12 @@ import java.util.concurrent.BlockingQueue;
 /**
  * @author isavin
  */
+@Component
 public class Writer extends Thread {
     private static final Logger logger = LoggerFactory.getLogger(Writer.class);
 
     private BlockingQueue<Page> pages;
+
     @Autowired
     private Repository repository;
 
@@ -36,7 +39,8 @@ public class Writer extends Thread {
                     repository.save(currentPage);
                     logger.info("Page [{}] was successfully saved", currentPage.getLink());
                 } catch (Exception e) {
-                    logger.error("Error serializing page [{}]: {}", currentPage.getLink(), e);
+                    logger.error("Error serializing page [{}]:", currentPage.getLink());
+                    logger.error("{}", e);
                 }
             }
         } catch (InterruptedException e) {
