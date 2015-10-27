@@ -1,12 +1,14 @@
 package ru.webcrawler.entity;
 
-public class Url {
+public class URL {
+    public final static URL POISON_PILL_URL = new URL("", -1);
+
     // address
     private String link;
     // link level
     private int depth;
 
-    public Url(String link, int depth) {
+    public URL(String link, int depth) {
         this.link = link;
         this.depth = depth;
     }
@@ -22,11 +24,11 @@ public class Url {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Url)) {
+        if (!(o instanceof URL)) {
             return false;
         }
 
-        Url url1 = (Url) o;
+        URL url1 = (URL) o;
 
         return link.equalsIgnoreCase(url1.link);
 
