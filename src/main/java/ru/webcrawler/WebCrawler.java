@@ -22,8 +22,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Created by isavin on 26.08.2015.
  */
-@Configuration
-@ComponentScan
 public class WebCrawler {
 
     private final static Logger logger = LoggerFactory.getLogger(WebCrawler.class);
@@ -38,25 +36,5 @@ public class WebCrawler {
         Thread writerThread = new Thread(new Writer(pages));
         transferThread.start();
         writerThread.start();
-    }
-
-    @Bean
-    public JdbcOperations jdbcOperations(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
-
-    @Bean
-    public DataSource dataSource() {
-        DriverManagerDataSource ds = new DriverManagerDataSource();
-        ds.setDriverClassName("org.hsqldb.jdbcDriver");
-        ds.setUrl("jdbc:hsqldb:hsql://localhost/xdb");
-        ds.setUsername("sa");
-        ds.setPassword("");
-        return ds;
-    }
-
-    @Bean
-    public Repository repository() {
-        return new JdbcRepository(jdbcOperations(dataSource()));
     }
 }

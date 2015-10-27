@@ -40,7 +40,7 @@ public class Writer extends Thread {
                     logger.info("Page [{}] was successfully saved", currentPage.getLink());
                 } catch (Exception e) {
                     logger.error("Error serializing page [{}]:", currentPage.getLink());
-                    logger.error("{}", e);
+                    logger.error("", e);
                 }
             }
         } catch (InterruptedException e) {
