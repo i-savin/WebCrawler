@@ -8,7 +8,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.webcrawler.entity.Page;
-import ru.webcrawler.entity.Url;
+import ru.webcrawler.entity.URL;
 
 import java.io.IOException;
 import java.util.concurrent.*;
@@ -21,9 +21,9 @@ public class Parser {
 
     private static final Logger logger = LoggerFactory.getLogger(Parser.class);
 
-    private BlockingQueue<Url> linksQueue = new LinkedBlockingQueue<>();
+    private BlockingQueue<URL> linksQueue = new LinkedBlockingQueue<>();
     private AtomicInteger linksCount = new AtomicInteger(0);
-    private CopyOnWriteArrayList<Url> visitedLinks = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<URL> visitedLinks = new CopyOnWriteArrayList<>();
 
     private int threadPoolSize;
     private int connectionTimeout;
@@ -35,12 +35,12 @@ public class Parser {
 
     public BlockingQueue<Page> parse(String urlStr, final int depthLimit) {
         final LinkedBlockingQueue<Page> pagesQueue = new LinkedBlockingQueue<>();
-        linksQueue.add(new Url(urlStr, 1));
+        linksQueue.add(new URL(urlStr, 1));
         new Thread(new Runnable() {
             @Override
             public void run() {
                 ExecutorService es = Executors.newFixedThreadPool(threadPoolSize);
-                Url currentUrl = null;
+                URL currentUrl = null;
                 try {
                     while ((currentUrl = linksQueue.poll(connectionTimeout, TimeUnit.SECONDS)) != null) {
                         es.execute(new UrlParser(currentUrl, depthLimit, pagesQueue));
@@ -55,11 +55,11 @@ public class Parser {
     }
 
     private class UrlParser implements Runnable {
-        private Url currentUrl;
+        private URL currentUrl;
         private int depthLimit;
         private BlockingQueue<Page> pagesQueue;
 
-        public UrlParser(Url currentUrl, int depthLimit, BlockingQueue<Page> pagesQueue) {
+        public UrlParser(URL currentUrl, int depthLimit, BlockingQueue<Page> pagesQueue) {
             this.currentUrl = currentUrl;
             this.depthLimit = depthLimit;
             this.pagesQueue = pagesQueue;
@@ -85,7 +85,7 @@ public class Parser {
                     Elements links = document.select("a[href]");
                     for (Element link : links) {
                         String linkStr = link.attr("abs:href");
-                        linksQueue.add(new Url(linkStr, currentUrl.getDepth() + 1));
+                        linksQueue.add(new URL(linkStr, currentUrl.getDepth() + 1));
                     }
                 }
                 linksCount.incrementAndGet();

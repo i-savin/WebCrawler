@@ -5,6 +5,9 @@ package ru.webcrawler.entity;
  */
 public class Page {
 
+    /**
+     * Poison pill page - stop signal for consumer
+     */
     public static Page POISON_PILL_PAGE = new Page("", "");
 
     private String link;
