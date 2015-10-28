@@ -8,10 +8,7 @@ import ru.webcrawler.entity.URL;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 
 /**
  * Created by isavin on 27.10.15.
@@ -31,7 +28,7 @@ public class Transfer implements Runnable {
         this.depth = depth;
         this.urls = new LinkedBlockingQueue<>();
         this.visitedLinks = new HashSet<>();
-        this.executorService = Executors.newFixedThreadPool(5);
+        this.executorService = Executors.newFixedThreadPool(50);
         this.urls.add(new URL(urlString, 0));
     }
 
@@ -44,20 +41,35 @@ public class Transfer implements Runnable {
         URL currentUrl = null;
 
         try {
-            while ((currentUrl = urls.take()) != null) { //TODO как остановить
+            while (!(currentUrl = urls.take()).equals(URL.POISON_PILL_URL)) { //TODO как остановить
                 if (visitedLinks.add(currentUrl.getUrl()) &&
                         URL_VALIDATOR.isValid(currentUrl.getUrl())) {
-                    logger.info("Processing URL [{}]...", currentUrl.getUrl());
-                    if (currentUrl.getDepth() <= depth) {
+                    logger.info("Processing URL [{}], URL depth [{}], target depth [{}]...", currentUrl.getUrl(), currentUrl.getDepth(), depth);
+                    if (currentUrl.getDepth() < depth) {
                         executorService.execute(new Parser(pages, urls, currentUrl));
                     } else {
                         logger.info("Depth limit exceeds");
-                        urls.add(null);
+                        urls.add(URL.POISON_PILL_URL);
                     }
                 }
             }
+            //TODO слишком рано...
+            logger.info("Transfer cycle finished");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        try {
+            executorService.awaitTermination(1, TimeUnit.HOURS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            pages.put(Page.POISON_PILL_PAGE);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        logger.info("Transfer finished, pages.size(): [{}]", pages.size());
     }
 }

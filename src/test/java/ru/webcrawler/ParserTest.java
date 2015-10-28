@@ -1,16 +1,16 @@
 package ru.webcrawler;
 
-import org.junit.Test; 
-import org.junit.Before; 
-import org.junit.After; 
+//import org.junit.Test;
+//import org.junit.Before;
+//import org.junit.After;
 
-public class ParserTest { 
+public class ParserTest {
 
-@Before
+   //@Before
 public void before() throws Exception { 
-} 
+}
 
-@After
+   //@After
 public void after() throws Exception { 
 } 
 
@@ -18,8 +18,8 @@ public void after() throws Exception {
 * 
 * Method: parse(String urlStr, final int depthLimit) 
 * 
-*/ 
-@Test
+*/
+//@Test
 public void testParse() throws Exception { 
 //TODO: Test goes here... 
 } 
@@ -28,8 +28,8 @@ public void testParse() throws Exception {
 * 
 * Method: run() 
 * 
-*/ 
-@Test
+*/
+//@Test
 public void testRun() throws Exception { 
 //TODO: Test goes here... 
 } 
@@ -39,8 +39,8 @@ public void testRun() throws Exception {
 * 
 * Method: parseUrl() 
 * 
-*/ 
-@Test
+*/
+//@Test
 public void testParseUrl() throws Exception { 
 //TODO: Test goes here... 
 /* 

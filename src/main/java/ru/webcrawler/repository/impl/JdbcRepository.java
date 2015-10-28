@@ -2,17 +2,17 @@ package ru.webcrawler.repository.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.stereotype.Component;
 import ru.webcrawler.entity.Page;
 import ru.webcrawler.repository.Repository;
 
 /**
  * @author isavin
  */
-@Component
+@org.springframework.stereotype.Repository
 public class JdbcRepository implements Repository {
 
-    private final static String INSERT_SQL_SCRIPT = "INSERT INTO PAGES (URL, TEXT) VALUES (?, ?)";
+    private final static String INSERT_SQL_SCRIPT = "INSERT INTO PUBLIC.PAGES (URL, TEXT) VALUES (?, ?)";
+
     private JdbcOperations jdbcOperations;
 
     @Autowired

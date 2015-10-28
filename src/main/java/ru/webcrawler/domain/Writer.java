@@ -18,7 +18,6 @@ public class Writer extends Thread {
 
     private BlockingQueue<Page> pages;
 
-    @Autowired
     private Repository repository;
 
     public Writer(BlockingQueue<Page> pages) {
@@ -36,8 +35,9 @@ public class Writer extends Thread {
         try {
             while (!(currentPage = pages.take()).equals(Page.POISON_PILL_PAGE)) {
                 try {
+//                    logger.info("Serializing page[{}], poison [{}]...", currentPage.getLink(), pages.contains(Page.POISON_PILL_PAGE));
                     repository.save(currentPage);
-                    logger.info("Page [{}] was successfully saved", currentPage.getLink());
+//                    logger.info("Page [{}] was successfully saved, poison [{}]", currentPage.getLink(), pages.contains(Page.POISON_PILL_PAGE));
                 } catch (Exception e) {
                     logger.error("Error serializing page [{}]:", currentPage.getLink());
                     logger.error("", e);
@@ -46,6 +46,11 @@ public class Writer extends Thread {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        logger.info("All pages from queue was saved");
+        logger.info("All pages from queue was saved, pages.size(): [{}]", pages.size());
+    }
+
+    @Autowired
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 }

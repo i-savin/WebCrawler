@@ -34,17 +34,19 @@ public class Parser implements Runnable {
     }
 
     private void parse() {
+        logger.info("Parsing started [{}]...", currentUrl);
         try {
-            Document document = Jsoup.connect(currentUrl.getUrl()).timeout(1000).get();
+            Document document = Jsoup.connect(currentUrl.getUrl()).timeout(3000).get();//TODO таймаут -> параметр
             pages.add(new Page(currentUrl.getUrl(), document.body().text()));
             Elements linkElements = document.select("a[href]");
             for (Element linkElement : linkElements) {
                 String linkStr = linkElement.attr("abs:href");
                 links.add(new URL(linkStr, currentUrl.getDepth() + 1));
             }
-            logger.info("Processed link: [{}]", currentUrl.getUrl());
+//            logger.info("Processed link: [{}]", currentUrl.getUrl());
         } catch (IOException e) {
             logger.error("Error connecting to URL [{}]: {}", currentUrl.getUrl(), e);
         }
+        logger.info("Parsing finished, pages size [{}], poison [{}]", pages.size(), pages.contains(Page.POISON_PILL_PAGE));
     }
 }
